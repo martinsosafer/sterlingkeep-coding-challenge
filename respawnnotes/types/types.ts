@@ -10,8 +10,8 @@ export interface User {
 
 export interface Profile {
   id: string;
-  username?: string;
-  avatar_url?: string;
+  username: string;
+  avatar_url: string;
 }
 export interface Author {
   name: string;
@@ -22,7 +22,7 @@ export interface Post {
   content: string;
   created_at: string;
   user_id: string;
-  profiles?: Profile[];
+  profiles?: Profile;
   comments?: Comment[];
   image_url?: string;
 }
@@ -31,12 +31,15 @@ export interface Comment {
   content: string;
   created_at: string;
   user_id: string;
-  profiles?: Profile[];
+  profiles?: Profile | Profile[];
 }
 
 export interface FormattedPost {
   id: string;
-  author: Author;
+  author: {
+    name: string;
+    avatar: string;
+  };
   content: string;
   timestamp: string;
   comments: FormattedComment[];
@@ -45,5 +48,8 @@ export interface FormattedComment {
   id: string;
   content: string;
   created_at: string;
-  author: Author;
+  author: {
+    name: string;
+    avatar: string;
+  };
 }

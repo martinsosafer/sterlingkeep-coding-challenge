@@ -18,12 +18,21 @@ export async function createPost(formData: FormData) {
     redirect("/login");
   }
 
+  // Extract username with proper fallbacks
+  const username =
+    user.user_metadata?.full_name ||
+    user.user_metadata?.user_name ||
+    user.user_metadata?.preferred_username ||
+    user.user_metadata?.username ||
+    user.email?.split("@")[0] ||
+    "New User";
+
   // Ensure a profile exists for the user
   const { error: profileError } = await supabase.from("profiles").upsert(
     {
       id: user.id,
       email: user.email,
-      username: user.user_metadata?.full_name || "",
+      username,
       avatar_url: user.user_metadata?.avatar_url || "",
     },
     { onConflict: "id" }

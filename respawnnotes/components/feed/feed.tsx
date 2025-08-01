@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import PostCard from "./post-card";
-import { Post, FormattedPost, User, FormattedComment } from "@/types/types";
+import { Post, FormattedPost, FormattedComment, Profile } from "@/types/types";
 
 export default async function Feed() {
   const supabase = await createClient();
@@ -53,28 +53,36 @@ export default async function Feed() {
   }
 
   const formatPost = (post: Post): FormattedPost => {
-    if (!post.profiles) {
-      throw new Error("Post is missing required profile information");
-    }
+    // Handle both single profile and array cases for post author
+    const getProfileData = (profiles: Profile | Profile[] | undefined) => {
+      if (!profiles)
+        return { username: "Unknown", avatar_url: "/default-avatar.png" };
+      if (Array.isArray(profiles))
+        return (
+          profiles[0] || {
+            username: "Unknown",
+            avatar_url: "/default-avatar.png",
+          }
+        );
+      return profiles;
+    };
 
+    const authorProfile = getProfileData(post.profiles);
     const author = {
-      name: post.profiles.username ?? "Unknown", // Fallback for username
-      avatar: post.profiles.avatar_url ?? "/default-avatar.png", // Fallback for avatar
+      name: authorProfile.username,
+      avatar: authorProfile.avatar_url,
     };
 
     const comments: FormattedComment[] =
       post.comments?.map((comment) => {
-        if (!comment.profiles) {
-          throw new Error("Comment is missing required profile information");
-        }
-
+        const commentProfile = getProfileData(comment.profiles);
         return {
           id: comment.id,
           content: comment.content,
           created_at: comment.created_at,
           author: {
-            name: comment.profiles.username ?? "Unknown",
-            avatar: comment.profiles.avatar_url ?? "/default-avatar.png",
+            name: commentProfile.username,
+            avatar: commentProfile.avatar_url,
           },
         };
       }) || [];
@@ -91,7 +99,6 @@ export default async function Feed() {
       comments,
     };
   };
-
   return (
     <div className="space-y-4">
       {posts.map((post) => {

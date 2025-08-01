@@ -12,7 +12,7 @@ interface PostCardProps {
 
 export default function PostCard({ post, user }: PostCardProps) {
   const [showAllComments, setShowAllComments] = useState(false);
-  const [comments, setComments] = useState<FormattedComment[]>(post.comments); // Changed to FormattedComment[]
+  const [comments, setComments] = useState<FormattedComment[]>(post.comments);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
 
   const loadComments = async () => {

@@ -30,6 +30,7 @@ export async function createComment(postId: string, formData: FormData) {
       id,
       content,
       created_at,
+      user_id,
       profiles:user_id (
         username,
         avatar_url
@@ -44,15 +45,19 @@ export async function createComment(postId: string, formData: FormData) {
 
   revalidatePath("/feed");
 
+  // Handle the case where profiles comes as an array
+  const profile = Array.isArray(data.profiles)
+    ? data.profiles[0]
+    : data.profiles;
+
   // Return the new comment with author info
   return {
     id: data.id,
     content: data.content,
     created_at: data.created_at,
     author: {
-      name: data.profiles?.[0]?.username || "Anonymous",
-      avatar:
-        data.profiles?.[0]?.avatar_url || "https://via.placeholder.com/40",
+      name: profile?.username || "Anonymous",
+      avatar: profile?.avatar_url || "https://via.placeholder.com/40",
     },
   };
 }
