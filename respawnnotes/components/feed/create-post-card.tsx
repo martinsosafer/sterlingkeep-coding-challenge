@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useTransition } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { createPost } from "@/actions/posts/create";
-import { useFormStatus } from "react-dom";
 import { User } from "@/types/types";
 import ArcadeButton from "../ui/arcade-button";
 
@@ -11,22 +11,10 @@ interface CreatePostCardProps {
   user: User;
 }
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <ArcadeButton
-      type="submit"
-      variant="log"
-      disabled={pending}
-      className="text-green-400 text-sm"
-    >
-      {pending ? "POSTING..." : "POST"}
-    </ArcadeButton>
-  );
-}
-
 export default function CreatePostCard({ user }: CreatePostCardProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -36,12 +24,8 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
-
-      // Create preview URL
       const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrl(reader.result as string);
-      };
+      reader.onload = () => setPreviewUrl(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -49,16 +33,26 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
   const handleRemoveImage = () => {
     setImageFile(null);
     setPreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = async (formData: FormData) => {
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
-    await createPost(formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("content", content);
+    if (imageFile) formData.append("image", imageFile);
+
+    startTransition(async () => {
+      const result = await createPost(formData);
+      if (result.success) {
+        setContent("");
+        handleRemoveImage();
+        router.refresh(); // 💥 Refresh feed
+      } else {
+        alert(result.message);
+      }
+    });
   };
 
   return (
@@ -66,9 +60,8 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
       <div className="relative">
         <div className="border-4 border-black bg-[var(--primary-light)] p-1">
           <div className="border-2 border-yellow-400 bg-[var(--primary-light)] p-4">
-            <form action={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="flex items-start gap-4">
-                {/* Pixelated Avatar */}
                 {user?.user_metadata?.avatar_url && (
                   <div className="w-12 h-12 border-4 border-black bg-black p-0.5 flex-shrink-0">
                     <div className="w-full h-full border-2 border-bg-[var(--secondary-lighter)] overflow-hidden">
@@ -84,9 +77,7 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
                   </div>
                 )}
 
-                {/* Textarea and Button */}
                 <div className="flex-1">
-                  {/* Text Input */}
                   <div className="border-4 border-black bg-black p-1">
                     <div className="border-2 border-green-400 bg-gray-900 p-2">
                       <textarea
@@ -100,7 +91,6 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
                     </div>
                   </div>
 
-                  {/* Image Upload Section */}
                   <div className="mt-3">
                     <input
                       type="file"
@@ -143,16 +133,21 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
                     )}
                   </div>
 
-                  {/* Separator */}
                   <div className="flex items-center gap-1 my-3">
                     {Array.from({ length: 20 }).map((_, i) => (
                       <div key={i} className="w-2 h-1 bg-yellow-400" />
                     ))}
                   </div>
 
-                  {/* Arcade Submit Button */}
                   <div className="flex justify-end">
-                    <SubmitButton />
+                    <ArcadeButton
+                      type="submit"
+                      variant="log"
+                      disabled={isPending}
+                      className="text-green-400 text-sm"
+                    >
+                      {isPending ? "POSTING..." : "POST"}
+                    </ArcadeButton>
                   </div>
                 </div>
               </div>

@@ -1,8 +1,8 @@
+// actions/posts/create.ts
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
 
 export async function createPost(formData: FormData) {
@@ -11,19 +11,21 @@ export async function createPost(formData: FormData) {
   const imageFile = formData.get("image") as File | null;
 
   if (!content && (!imageFile || imageFile.size === 0)) {
-    throw new Error("Post must include either text or an image.");
+    return {
+      success: false,
+      message: "Post must include either text or an image.",
+    };
   }
-  // Get current user
+
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/login");
+    return { success: false, message: "Not authenticated" };
   }
 
-  // Extract username with proper fallbacks
   const username =
     user.user_metadata?.full_name ||
     user.user_metadata?.user_name ||
@@ -32,7 +34,6 @@ export async function createPost(formData: FormData) {
     user.email?.split("@")[0] ||
     "New User";
 
-  // Handle image upload
   let imageUrl = null;
   if (imageFile && imageFile.size > 0) {
     try {
@@ -47,12 +48,10 @@ export async function createPost(formData: FormData) {
       imageUrl = blob.url;
     } catch (error) {
       console.error("Image upload failed:", error);
-      // Continue without image if upload fails
     }
   }
 
-  // Ensure a profile exists for the user
-  const { error: profileError } = await supabase.from("profiles").upsert(
+  await supabase.from("profiles").upsert(
     {
       id: user.id,
       email: user.email,
@@ -62,22 +61,17 @@ export async function createPost(formData: FormData) {
     { onConflict: "id" }
   );
 
-  if (profileError) {
-    console.error("Profile error:", profileError.message);
-  }
-
-  // Create the post with optional image
   const { error } = await supabase.from("posts").insert({
     content,
     user_id: user.id,
-    image_url: imageUrl, // Add image URL to post
+    image_url: imageUrl,
   });
 
   if (error) {
     console.error("Post creation failed:", error.message);
-    throw error;
+    return { success: false, message: error.message };
   }
 
   revalidatePath("/");
-  redirect("/");
+  return { success: true };
 }

@@ -52,8 +52,7 @@ export default function PostCard({ post, user }: PostCardProps) {
                 </div>
               </div>
             </div>
-
-            {/* ==== CONTENT TEXT ==== */}
+            {/* Post Content */}
             <div className="mb-4">
               <div className="border-4 border-black bg-black p-1">
                 <div className="border-2 border-green-400 bg-gray-900 p-4">
@@ -62,6 +61,30 @@ export default function PostCard({ post, user }: PostCardProps) {
                       {"> POST_CONTENT.TXT"}
                     </div>
                     <div>{post.content}</div>
+
+                    {/* ==== IMAGE INSIDE CONTENT (if exists) ==== */}
+                    {post.image_url && (
+                      <div className="mt-4 flex justify-center">
+                        <div className="border-4 border-black bg-black p-0.5">
+                          <div className="border-2 border-blue-400 bg-gray-800 overflow-hidden">
+                            <div className="relative w-[300px] h-[200px] flex items-center justify-center">
+                              <Image
+                                src={post.image_url}
+                                alt={`Post image ${post.id}`}
+                                fill
+                                className="object-contain"
+                                loading="lazy"
+                                unoptimized={post.image_url.endsWith(".svg")}
+                                style={{
+                                  imageRendering: "pixelated",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="text-xs text-green-600 mt-2">
                       {"> END_OF_FILE"}
                     </div>
@@ -69,28 +92,6 @@ export default function PostCard({ post, user }: PostCardProps) {
                 </div>
               </div>
             </div>
-
-            {/* ==== IMAGE SECTION (if exists) ==== */}
-            {post.image_url && (
-              <div className="mb-4">
-                <div className="border-4 border-black bg-black p-0.5">
-                  <div className="border-2 border-blue-400 bg-gray-800 overflow-hidden">
-                    <Image
-                      src={post.image_url}
-                      alt={`Post image ${post.id}`}
-                      width={200}
-                      height={150}
-                      className="w-full h-auto object-contain"
-                      loading="lazy"
-                      unoptimized={post.image_url.endsWith(".svg")}
-                      style={{
-                        imageRendering: "pixelated",
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* ==== SEPARATOR ==== */}
             <div className="flex items-center gap-1 my-4">
@@ -161,16 +162,22 @@ export default function PostCard({ post, user }: PostCardProps) {
                               </p>
                             )}
                             {c.image_url && (
-                              <div className="border-2 border-black bg-black p-1 mt-2">
-                                <div className="border border-blue-400 bg-gray-900 overflow-hidden">
-                                  <Image
-                                    src={c.image_url}
-                                    alt={`Comment image ${c.id}`}
-                                    width={200}
-                                    height={150}
-                                    className="w-full h-auto object-contain"
-                                    style={{ imageRendering: "pixelated" }}
-                                  />
+                              <div className="mt-2 flex justify-center">
+                                <div className="border-2 border-black bg-black p-1">
+                                  <div className="border-2 border-blue-400 bg-gray-800 overflow-hidden">
+                                    <div className="relative w-[300px] h-[200px] flex items-center justify-center">
+                                      <Image
+                                        src={c.image_url}
+                                        alt={`Comment image ${post.id}`}
+                                        fill
+                                        className="object-contain"
+                                        unoptimized={c.image_url.endsWith(
+                                          ".svg"
+                                        )}
+                                        style={{ imageRendering: "pixelated" }}
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             )}
