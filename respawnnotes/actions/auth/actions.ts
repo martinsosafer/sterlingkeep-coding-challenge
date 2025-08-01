@@ -7,8 +7,7 @@ export async function signInWithGitHub() {
   const supabase = await createClient();
 
   const redirectTo =
-    `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}` +
-    `/api/auth/callback`;
+    `${process.env.NEXT_PUBLIC_SITE_URL}` + `/api/auth/callback`;
 
   console.log("→ will ask Supabase to redirect_to:", redirectTo);
   const { data, error } = await supabase.auth.signInWithOAuth({
