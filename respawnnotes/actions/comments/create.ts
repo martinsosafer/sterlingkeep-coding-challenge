@@ -4,16 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-type CommentWithProfile = {
-  id: string;
-  content: string;
-  created_at: string;
-  profiles: {
-    username: string;
-    avatar_url: string;
-  }[];
-};
-
 export async function createComment(postId: string, formData: FormData) {
   const supabase = await createClient();
   const content = formData.get("content") as string;
@@ -27,7 +17,7 @@ export async function createComment(postId: string, formData: FormData) {
     redirect("/login");
   }
 
-  // Insert the comment and fetch joined profile info
+  // Insert comment and get the full data with author info
   const { data, error } = await supabase
     .from("comments")
     .insert({
@@ -48,22 +38,21 @@ export async function createComment(postId: string, formData: FormData) {
     )
     .single();
 
-  if (error || !data) {
-    throw new Error(`Failed to create comment: ${error?.message}`);
+  if (error) {
+    throw new Error(`Failed to create comment: ${error.message}`);
   }
-
-  const comment = data as CommentWithProfile;
-  const profile = comment.profiles?.[0];
 
   revalidatePath("/feed");
 
+  // Return the new comment with author info
   return {
-    id: comment.id,
-    content: comment.content,
-    created_at: comment.created_at,
+    id: data.id,
+    content: data.content,
+    created_at: data.created_at,
     author: {
-      name: profile?.username || "Anonymous",
-      avatar: profile?.avatar_url || "https://via.placeholder.com/40",
+      name: data.profiles?.[0]?.username || "Anonymous",
+      avatar:
+        data.profiles?.[0]?.avatar_url || "https://via.placeholder.com/40",
     },
   };
 }
