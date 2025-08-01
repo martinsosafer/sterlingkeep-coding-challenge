@@ -7,7 +7,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
         port: "",
-        pathname: "/**", // This allows any path from this hostname
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
       },
     ],
   },

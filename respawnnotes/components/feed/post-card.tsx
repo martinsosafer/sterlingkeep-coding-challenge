@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import CommentForm from "./comment-form";
 import { User, FormattedPost, FormattedComment } from "@/types/types";
-import Image from "next/image";
 import ArcadeButton from "../ui/arcade-button";
 
 interface PostCardProps {
@@ -11,6 +11,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, user }: PostCardProps) {
+  console.log("posts", post);
   const [showAllComments, setShowAllComments] = useState(false);
   const [comments, setComments] = useState<FormattedComment[]>(post.comments);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -20,7 +21,6 @@ export default function PostCard({ post, user }: PostCardProps) {
       setShowAllComments(true);
       return;
     }
-
     setIsLoadingComments(true);
     try {
       setShowAllComments(!showAllComments);
@@ -30,22 +30,17 @@ export default function PostCard({ post, user }: PostCardProps) {
   };
 
   const displayedComments = showAllComments ? comments : comments.slice(0, 2);
-
   const handleNewComment = (newComment: FormattedComment) => {
-    // Changed to FormattedComment
     setComments((prev) => [...prev, newComment]);
   };
 
   return (
-    <div className="w-full  p-2 bg-[var(--primary-darker)] h-full">
-      {/* Main Post Container */}
-      <div className="relative ">
-        {/* Outer Pixelated Frame */}
+    <div className="w-full p-2 bg-[var(--primary-darker)] h-full">
+      <div className="relative">
         <div className="border-4 border-black bg-[var(--primary-light)] p-1">
           <div className="border-2 border-yellow-400 bg-[var(--primary-light)] p-4">
-            {/* Header with Avatar and User Info */}
+            {/* ==== AUTHOR HEADER ==== */}
             <div className="flex items-center gap-4 mb-4">
-              {/* Pixelated Avatar Frame */}
               <div className="relative">
                 <div className="w-12 h-12 border-4 border-black bg-black p-0.5">
                   <div className="w-full h-full border-2 border-bg-[var(--secondary-lighter)] overflow-hidden">
@@ -60,8 +55,6 @@ export default function PostCard({ post, user }: PostCardProps) {
                   </div>
                 </div>
               </div>
-
-              {/* User Info with Timestamp */}
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-lg font-bold text-[var(--primary-darker)] tracking-wider">
@@ -74,7 +67,7 @@ export default function PostCard({ post, user }: PostCardProps) {
               </div>
             </div>
 
-            {/* Post Content in Arcade Text Area */}
+            {/* ==== CONTENT TEXT ==== */}
             <div className="mb-4">
               <div className="border-4 border-black bg-black p-1">
                 <div className="border-2 border-green-400 bg-gray-900 p-4">
@@ -82,7 +75,7 @@ export default function PostCard({ post, user }: PostCardProps) {
                     <div className="text-xs text-green-600 mb-1">
                       {"> POST_CONTENT.TXT"}
                     </div>
-                    <div className="text-green-400">{post.content}</div>
+                    <div>{post.content}</div>
                     <div className="text-xs text-green-600 mt-2">
                       {"> END_OF_FILE"}
                     </div>
@@ -91,14 +84,36 @@ export default function PostCard({ post, user }: PostCardProps) {
               </div>
             </div>
 
-            {/* Pixelated Separator */}
+            {/* ==== IMAGE SECTION (if exists) ==== */}
+            {post.image_url && (
+              <div className="mb-4">
+                <div className="border-4 border-black bg-black p-0.5">
+                  <div className="border-2 border-blue-400 bg-gray-800 overflow-hidden">
+                    <Image
+                      src={post.image_url}
+                      alt={`Post image ${post.id}`}
+                      width={800}
+                      height={600}
+                      className="w-full h-auto object-contain"
+                      loading="lazy"
+                      unoptimized={post.image_url.endsWith(".svg")}
+                      style={{
+                        imageRendering: "pixelated",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ==== SEPARATOR ==== */}
             <div className="flex items-center gap-1 my-4">
               {Array.from({ length: 20 }).map((_, i) => (
                 <div key={i} className="w-2 h-1 bg-yellow-400"></div>
               ))}
             </div>
 
-            {/* Action Buttons */}
+            {/* ==== ACTION BUTTONS ==== */}
             <div className="flex gap-3 mb-4">
               <ArcadeButton variant="log" className="flex items-center gap-2">
                 <span className="text-red-500">♥</span>
@@ -118,50 +133,62 @@ export default function PostCard({ post, user }: PostCardProps) {
               </ArcadeButton>
             </div>
 
-            {/* Comments Section */}
+            {/* ==== COMMENTS ==== */}
             {comments.length > 0 && (
               <div className="space-y-3">
-                <div className="font-mono text-md font-bold  text-yellow-400 tracking-wider">
+                <div className="font-mono text-md font-bold text-yellow-400 tracking-wider">
                   {"> COMMENTS-SECTION"}
                 </div>
 
-                {displayedComments.map((comment: any) => (
-                  <div key={comment.id} className="flex items-start gap-3">
-                    {/* Comment Avatar */}
-                    <div className="w-8 h-8 border-2 border-black bg-black p-0.5 flex-shrink-0">
-                      <div className="w-full h-full border border-purple-400 overflow-hidden">
-                        <Image
-                          src={comment.author.avatar || "/placeholder.svg"}
-                          alt={comment.author.name}
-                          width={24}
-                          height={24}
-                          className="w-full h-full object-cover"
-                          style={{ imageRendering: "pixelated" }}
-                        />
+                {displayedComments.map((c) => (
+                  <div key={c.id} className="flex flex-col gap-2">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 border-2 border-black bg-black p-0.5 flex-shrink-0">
+                        <div className="w-full h-full border border-purple-400 overflow-hidden">
+                          <Image
+                            src={c.author.avatar || "/placeholder.svg"}
+                            alt={c.author.name}
+                            width={24}
+                            height={24}
+                            className="w-full h-full object-cover"
+                            style={{ imageRendering: "pixelated" }}
+                          />
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Comment Content */}
-                    <div className="flex-1">
-                      <div className="border-2 border-black bg-black p-1">
-                        <div className="border border-purple-400 bg-gray-800 p-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-xs font-bold text-purple-400">
-                              {comment.author.name}
-                            </span>
-                            <span className="font-mono text-xs text-gray-500">
-                              {new Date(comment.created_at).toLocaleTimeString(
-                                [],
-                                {
+                      <div className="flex-1">
+                        <div className="border-2 border-black bg-black p-1">
+                          <div className="border border-purple-400 bg-gray-800 p-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-mono text-xs font-bold text-purple-400">
+                                {c.author.name}
+                              </span>
+                              <span className="font-mono text-xs text-gray-500">
+                                {new Date(c.created_at).toLocaleTimeString([], {
                                   hour: "2-digit",
                                   minute: "2-digit",
-                                }
-                              )}
-                            </span>
+                                })}
+                              </span>
+                            </div>
+                            {c.content && (
+                              <p className="font-mono text-sm text-white leading-relaxed mb-2">
+                                {c.content}
+                              </p>
+                            )}
+                            {c.image_url && (
+                              <div className="border-2 border-black bg-black p-1 mt-2">
+                                <div className="border border-blue-400 bg-gray-900 overflow-hidden">
+                                  <Image
+                                    src={c.image_url}
+                                    alt={`Comment image ${c.id}`}
+                                    width={400}
+                                    height={300}
+                                    className="w-full h-auto object-contain"
+                                    style={{ imageRendering: "pixelated" }}
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          <p className="font-mono text-sm text-white leading-relaxed">
-                            {comment.content}
-                          </p>
                         </div>
                       </div>
                     </div>
@@ -185,7 +212,7 @@ export default function PostCard({ post, user }: PostCardProps) {
               </div>
             )}
 
-            {/* New Comment Form */}
+            {/* ==== NEW COMMENT FORM ==== */}
             {user && (
               <div className="mt-4 flex items-start gap-3">
                 {user?.user_metadata?.avatar_url && (

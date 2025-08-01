@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { createPost } from "@/actions/posts/create";
 import { useFormStatus } from "react-dom";
@@ -28,10 +28,38 @@ function SubmitButton() {
 
 export default function CreatePostCard({ user }: CreatePostCardProps) {
   const [content, setContent] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (formData: FormData) => {
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
     await createPost(formData);
-    setContent("");
+    // State will be reset by redirect
   };
 
   return (
@@ -69,9 +97,51 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
                         rows={4}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        required
                       />
                     </div>
+                  </div>
+
+                  {/* Image Upload Section */}
+                  <div className="mt-3">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept="image/*,image/gif"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+
+                    <ArcadeButton
+                      type="button"
+                      variant="log"
+                      className="text-blue-400 text-xs"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      🖼️ ADD IMAGE
+                    </ArcadeButton>
+
+                    {previewUrl && (
+                      <div className="mt-2 border-4 border-black bg-black p-1">
+                        <div className="border-2 border-yellow-400 bg-gray-900 p-2">
+                          <div className="relative h-40">
+                            <Image
+                              src={previewUrl}
+                              alt="Preview"
+                              fill
+                              className="object-contain"
+                              style={{ imageRendering: "pixelated" }}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="mt-2 text-xs text-red-400 hover:underline"
+                          >
+                            REMOVE IMAGE
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Separator */}

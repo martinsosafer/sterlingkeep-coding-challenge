@@ -32,6 +32,7 @@ export interface Comment {
   created_at: string;
   user_id: string;
   profiles?: Profile | Profile[];
+  image_url?: string;
 }
 
 export interface FormattedPost {
@@ -42,6 +43,7 @@ export interface FormattedPost {
   };
   content: string;
   timestamp: string;
+  image_url?: string;
   comments: FormattedComment[];
 }
 export interface FormattedComment {
@@ -52,4 +54,5 @@ export interface FormattedComment {
     name: string;
     avatar: string;
   };
+  image_url?: string;
 }

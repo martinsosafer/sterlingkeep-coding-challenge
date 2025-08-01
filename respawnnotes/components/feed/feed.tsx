@@ -9,10 +9,11 @@ export default async function Feed() {
     .from("posts")
     .select(
       `
-      id, 
-      content, 
+      id,
+      content,
       created_at,
       user_id,
+      image_url,
       profiles:user_id (
         id,
         username,
@@ -23,6 +24,7 @@ export default async function Feed() {
         content,
         created_at,
         user_id,
+        image_url,
         profiles:user_id (
           id,
           username,
@@ -33,7 +35,6 @@ export default async function Feed() {
     )
     .order("created_at", { ascending: false })
     .returns<Post[]>();
-
   if (error) {
     console.error("Error fetching posts:", error);
     return <div className="text-red-500">Error loading posts</div>;
@@ -80,6 +81,7 @@ export default async function Feed() {
           id: comment.id,
           content: comment.content,
           created_at: comment.created_at,
+          image_url: comment.image_url,
           author: {
             name: commentProfile.username,
             avatar: commentProfile.avatar_url,
@@ -96,6 +98,7 @@ export default async function Feed() {
         day: "numeric",
         year: "numeric",
       }),
+      image_url: post.image_url ?? undefined,
       comments,
     };
   };
