@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useRef } from "react";
-import { createComment } from "@/actions/comments/create";
+import React from "react";
+import { useCommentForm } from "@/hooks/useCommentForm";
 import ArcadeButton from "../ui/arcade-button";
 import Image from "next/image";
 
@@ -23,57 +23,17 @@ export default function CommentForm({
   postId: string;
   onCommentAdded: (comment: Comment) => void;
 }) {
-  const [content, setContent] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImageFile(file);
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setPreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim() && !imageFile) return;
-
-    setIsSubmitting(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("content", content);
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
-
-      const newComment = await createComment(postId, formData);
-      onCommentAdded(newComment);
-      setContent("");
-      setImageFile(null);
-      setPreviewUrl(null);
-    } catch (error) {
-      console.error("Failed to post comment:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    content,
+    setContent,
+    imageFile,
+    previewUrl,
+    fileInputRef,
+    isSubmitting,
+    handleImageChange,
+    handleRemoveImage,
+    handleSubmit,
+  } = useCommentForm(postId, onCommentAdded);
 
   return (
     <div className="flex-1">
@@ -125,7 +85,7 @@ export default function CommentForm({
                 />
                 <ArcadeButton
                   type="button"
-                  variant="image"
+                  variant="log"
                   className="text-xs px-2"
                   onClick={() => fileInputRef.current?.click()}
                 >

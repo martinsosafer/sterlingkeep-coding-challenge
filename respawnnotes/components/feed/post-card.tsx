@@ -4,6 +4,7 @@ import Image from "next/image";
 import CommentForm from "./comment-form";
 import { User, FormattedPost, FormattedComment } from "@/types/types";
 import ArcadeButton from "../ui/arcade-button";
+import { useComments } from "@/hooks/useComments";
 
 interface PostCardProps {
   post: FormattedPost;
@@ -11,29 +12,14 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, user }: PostCardProps) {
-  console.log("posts", post);
-  const [showAllComments, setShowAllComments] = useState(false);
-  const [comments, setComments] = useState<FormattedComment[]>(post.comments);
-  const [isLoadingComments, setIsLoadingComments] = useState(false);
-
-  const loadComments = async () => {
-    if (comments.length > 0 && !showAllComments) {
-      setShowAllComments(true);
-      return;
-    }
-    setIsLoadingComments(true);
-    try {
-      setShowAllComments(!showAllComments);
-    } finally {
-      setIsLoadingComments(false);
-    }
-  };
-
-  const displayedComments = showAllComments ? comments : comments.slice(0, 2);
-  const handleNewComment = (newComment: FormattedComment) => {
-    setComments((prev) => [...prev, newComment]);
-  };
-
+  const {
+    comments,
+    displayedComments,
+    showAllComments,
+    isLoadingComments,
+    loadComments,
+    handleNewComment,
+  } = useComments(post.comments);
   return (
     <div className="w-full p-2 bg-[var(--primary-darker)] h-full">
       <div className="relative">
@@ -92,8 +78,8 @@ export default function PostCard({ post, user }: PostCardProps) {
                     <Image
                       src={post.image_url}
                       alt={`Post image ${post.id}`}
-                      width={800}
-                      height={600}
+                      width={200}
+                      height={150}
                       className="w-full h-auto object-contain"
                       loading="lazy"
                       unoptimized={post.image_url.endsWith(".svg")}
@@ -180,8 +166,8 @@ export default function PostCard({ post, user }: PostCardProps) {
                                   <Image
                                     src={c.image_url}
                                     alt={`Comment image ${c.id}`}
-                                    width={400}
-                                    height={300}
+                                    width={200}
+                                    height={150}
                                     className="w-full h-auto object-contain"
                                     style={{ imageRendering: "pixelated" }}
                                   />

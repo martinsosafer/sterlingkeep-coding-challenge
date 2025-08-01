@@ -18,6 +18,7 @@ export default async function FeedPage() {
     >
       <main className="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0 space-y-6">
+          {/* If we got user we  show the component */}
           {user && <CreatePostCard user={user} />}
           <Feed />
         </div>

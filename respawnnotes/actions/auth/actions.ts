@@ -9,7 +9,6 @@ export async function signInWithGitHub() {
   const redirectTo =
     `${process.env.NEXT_PUBLIC_SITE_URL}` + `/api/auth/callback`;
 
-  console.log("→ will ask Supabase to redirect_to:", redirectTo);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "github",
     options: { redirectTo },

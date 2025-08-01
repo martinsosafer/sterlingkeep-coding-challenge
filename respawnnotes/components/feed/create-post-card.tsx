@@ -59,7 +59,6 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
       formData.append("image", imageFile);
     }
     await createPost(formData);
-    // State will be reset by redirect
   };
 
   return (
