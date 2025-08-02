@@ -1,21 +1,9 @@
 import PostCard from "@/components/feed/post-card"; // adjust if needed
 import { getPosts } from "@/actions/posts/getPosts";
 import { formatPost } from "@/lib/posts/format-posts";
-import { unstable_cache } from "next/cache";
 
-// Cache the getPosts function
-const getCachedPosts = unstable_cache(
-  async () => {
-    return await getPosts();
-  },
-  ["posts-feed"], // cache key
-  {
-    revalidate: 60, // revalidate every 60 seconds
-    tags: ["posts"],
-  }
-);
 export default async function Feed() {
-  const { posts, error, user } = await getCachedPosts();
+  const { posts, error, user } = await getPosts();
 
   if (error) {
     console.error("Error fetching posts:", error);
