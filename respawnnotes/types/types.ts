@@ -25,6 +25,7 @@ export interface Post {
   profiles?: Profile;
   comments?: Comment[];
   image_url?: string;
+  post_likes: { id: string; user_id: string }[];
 }
 export interface Comment {
   id: string;
@@ -45,6 +46,8 @@ export interface FormattedPost {
   timestamp: string;
   image_url?: string;
   comments: FormattedComment[];
+  likeCount: number;
+  likedByUser: boolean;
 }
 export interface FormattedComment {
   id: string;

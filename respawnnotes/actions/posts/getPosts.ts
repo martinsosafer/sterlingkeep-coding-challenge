@@ -9,6 +9,10 @@ export async function getPosts(): Promise<{
 }> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: posts, error } = await supabase
     .from("posts")
     .select(
@@ -18,6 +22,10 @@ export async function getPosts(): Promise<{
       created_at,
       user_id,
       image_url,
+      post_likes (
+        id,
+        user_id
+      ),
       profiles:user_id (
         id,
         username,
@@ -38,11 +46,7 @@ export async function getPosts(): Promise<{
     `
     )
     .order("created_at", { ascending: false })
-    .returns<Post[]>();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    .returns<Post[]>(); // Make sure Post type includes post_likes
 
   return { posts, error, user };
 }

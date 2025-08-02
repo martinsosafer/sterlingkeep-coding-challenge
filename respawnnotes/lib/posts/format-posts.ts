@@ -1,6 +1,6 @@
 import { Post, FormattedPost, FormattedComment, Profile } from "@/types/types";
 
-export function formatPost(post: Post): FormattedPost {
+export function formatPost(post: Post, currentUserId?: string): FormattedPost {
   const getProfileData = (profiles: Profile | Profile[] | undefined) => {
     if (!profiles)
       return { username: "Unknown", avatar_url: "/default-avatar.png" };
@@ -34,6 +34,10 @@ export function formatPost(post: Post): FormattedPost {
         },
       };
     }) || [];
+  // Calculate lIKES
+  const likeCount = post.post_likes?.length || 0;
+  const likedByUser =
+    post.post_likes?.some((like) => like.user_id === currentUserId) || false;
 
   return {
     id: post.id,
@@ -46,5 +50,7 @@ export function formatPost(post: Post): FormattedPost {
     }),
     image_url: post.image_url ?? undefined,
     comments,
+    likeCount,
+    likedByUser,
   };
 }

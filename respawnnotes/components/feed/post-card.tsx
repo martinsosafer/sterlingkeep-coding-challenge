@@ -1,10 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import CommentForm from "./comment-form";
 import { User, FormattedPost, FormattedComment } from "@/types/types";
 import ArcadeButton from "../ui/arcade-button";
 import { useComments } from "@/hooks/useComments";
+import { useLike } from "@/hooks/useLike";
 
 interface PostCardProps {
   post: FormattedPost;
@@ -20,6 +21,14 @@ export default function PostCard({ post, user }: PostCardProps) {
     loadComments,
     handleNewComment,
   } = useComments(post.comments);
+  //like post
+  const { likeCount, likedByUser, isLiking, handleLike } = useLike(
+    post.id,
+    post.likeCount,
+    post.likedByUser,
+    user
+  );
+
   return (
     <div className="w-full p-2 bg-[var(--primary-darker)] h-full">
       <div className="relative">
@@ -102,9 +111,20 @@ export default function PostCard({ post, user }: PostCardProps) {
 
             {/* ==== ACTION BUTTONS ==== */}
             <div className="flex gap-3 mb-4">
-              <ArcadeButton variant="log" className="flex items-center gap-2">
-                <span className="text-red-500">♥</span>
-                <span>LIKE [0]</span>
+              <ArcadeButton
+                variant="log"
+                className={`flex items-center gap-2 ${
+                  likedByUser ? "text-red-500" : "text-white"
+                }`}
+                onClick={handleLike}
+                disabled={isLiking}
+              >
+                <span
+                  className={likedByUser ? "text-red-500" : "text-gray-400"}
+                >
+                  ♥
+                </span>
+                <span>LIKE [{likeCount}]</span>
               </ArcadeButton>
               <ArcadeButton
                 variant="log"

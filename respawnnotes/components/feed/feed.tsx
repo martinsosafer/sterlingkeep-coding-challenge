@@ -25,7 +25,7 @@ export default async function Feed() {
           return (
             <PostCard
               key={post.id}
-              post={formatPost(post)}
+              post={formatPost(post, user?.id)}
               user={user || undefined}
             />
           );
