@@ -8,7 +8,7 @@ export default async function Header() {
   return (
     <div
       className="w-full relative overflow-hidden
-        bg-gradient-to-r from-[var(--primary-dark)] via-[var(--primary)] to-[var(--secondary-dark)]"
+    bg-gradient-to-r from-[var(--primary-dark)] via-[var(--primary)] to-[var(--secondary-dark)]"
     >
       {/* BG LIGHTS */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -32,11 +32,12 @@ export default async function Header() {
         />
       </div>
 
-      <div className="relative z-10 py-6 md:py-8 px-6 flex items-center justify-between">
-        <div className="w-1/3" />
+      {/* Header content */}
+      <div className="relative z-10 py-6 md:py-8 px-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+        <div className="hidden md:block md:w-1/3" />
 
-        <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold pixel-font drop-shadow-[0_0_10px_rgba(0,255,100,0.7)]">
+        <div className="w-full md:w-auto text-center md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pixel-font drop-shadow-[0_0_10px_rgba(0,255,100,0.7)]">
             <span className="text-[var(--primary-light)]">Respawn</span>
             <span className="glitch" data-text="Notes">
               Notes
@@ -48,8 +49,8 @@ export default async function Header() {
           </h1>
         </div>
 
-        {/* Sign In/Out Button */}
-        <div className="w-1/3 flex justify-end">
+        {/* Buttons */}
+        <div className="w-full md:w-1/3 flex justify-center md:justify-end mt-4 md:mt-0">
           {user ? (
             <form action={signOut}>
               <ArcadeButton variant="log" type="submit">
@@ -70,8 +71,8 @@ export default async function Header() {
       <div className="h-1 w-full relative overflow-hidden">
         <div
           className="absolute inset-0 bg-gradient-to-r
-            from-[var(--secondary)] via-[var(--primary-lighter)] to-[var(--secondary-light)]
-            animate-gradient-x"
+        from-[var(--secondary)] via-[var(--primary-lighter)] to-[var(--secondary-light)]
+        animate-gradient-x"
         />
       </div>
     </div>

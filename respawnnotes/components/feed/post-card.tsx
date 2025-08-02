@@ -104,7 +104,7 @@ export default function PostCard({ post, user }: PostCardProps) {
                       <div className="mt-4 flex justify-center">
                         <div className="border-4 border-black bg-black p-0.5">
                           <div className="border-2 border-blue-400 bg-gray-800 overflow-hidden">
-                            <div className="relative w-[300px] h-[200px] flex items-center justify-center">
+                            <div className="relative w-[150px] h-[75px] sm:w-[300px] sm:h-[200px] flex items-center justify-center">
                               <Image
                                 src={post.image_url}
                                 alt={`Post image ${post.id}`}
@@ -217,7 +217,7 @@ export default function PostCard({ post, user }: PostCardProps) {
                               <div className="mt-2 flex justify-center">
                                 <div className="border-2 border-black bg-black p-1">
                                   <div className="border-2 border-blue-400 bg-gray-800 overflow-hidden">
-                                    <div className="relative w-[300px] h-[200px] flex items-center justify-center">
+                                    <div className="relative w-[150px] h-[75px] sm:w-[300px] sm:h-[200px] flex items-center justify-center">
                                       <Image
                                         src={c.image_url}
                                         alt={`Comment image ${post.id}`}
