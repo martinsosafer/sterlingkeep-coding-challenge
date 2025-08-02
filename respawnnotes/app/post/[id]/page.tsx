@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import PostCard from "@/components/feed/post-card";
 import { getPostById } from "@/actions/posts/getPostById";
 import { formatPost } from "@/lib/posts/format-posts";
@@ -11,20 +10,9 @@ interface PostPageProps {
   }>;
 }
 
-const getCachedPostById = unstable_cache(
-  async (id: string) => {
-    return await getPostById(id);
-  },
-  ["post-by-id"], // cache key prefix
-  {
-    revalidate: 300, // 5 minutes - adjust based on your needs
-    tags: ["posts"], // for cache invalidation
-  }
-);
-
 export default async function PostPage({ params }: PostPageProps) {
   const { id } = await params;
-  const { post, error, user } = await getCachedPostById(id);
+  const { post, error, user } = await getPostById(id);
 
   if (error || !post) {
     console.error("Error fetching post:", error);
