@@ -13,7 +13,7 @@ export function useLike(
   const [isLiking, setIsLiking] = useState(false);
 
   const handleLike = async () => {
-    if (!user) return; // Optionally show login modal
+    if (!user) return;
     setIsLiking(true);
     const result = await togglePostLike(postId);
     if (result.success) {

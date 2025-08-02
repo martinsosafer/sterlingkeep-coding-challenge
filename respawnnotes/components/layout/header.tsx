@@ -32,12 +32,9 @@ export default async function Header() {
         />
       </div>
 
-      {/* Container */}
       <div className="relative z-10 py-6 md:py-8 px-6 flex items-center justify-between">
-        {/* Empty space to help center title */}
         <div className="w-1/3" />
 
-        {/* Centered Title */}
         <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold pixel-font drop-shadow-[0_0_10px_rgba(0,255,100,0.7)]">
             <span className="text-[var(--primary-light)]">Respawn</span>

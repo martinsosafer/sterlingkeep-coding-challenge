@@ -48,7 +48,7 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
       if (result.success) {
         setContent("");
         handleRemoveImage();
-        router.refresh(); // 💥 Refresh feed
+        router.refresh(); // Refresh feed
       } else {
         alert(result.message);
       }
@@ -102,7 +102,7 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
 
                     <ArcadeButton
                       type="button"
-                      variant="log"
+                      variant="image"
                       className="text-blue-400 text-xs"
                       onClick={() => fileInputRef.current?.click()}
                     >
@@ -142,7 +142,7 @@ export default function CreatePostCard({ user }: CreatePostCardProps) {
                   <div className="flex justify-end">
                     <ArcadeButton
                       type="submit"
-                      variant="log"
+                      variant="post"
                       disabled={isPending}
                       className="text-green-400 text-sm"
                     >

@@ -28,7 +28,35 @@ export default function PostCard({ post, user }: PostCardProps) {
     post.likedByUser,
     user
   );
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/post/${post.id}`;
 
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Post by ${post.author.name}`,
+          text:
+            post.content.substring(0, 100) +
+            (post.content.length > 100 ? "..." : ""),
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.log("Error sharing:", err);
+        // Fallback to copying to clipboard
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied to clipboard!");
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied to clipboard!");
+      } catch (err) {
+        console.log("Error copying to clipboard:", err);
+
+        prompt("Copy this link:", shareUrl);
+      }
+    }
+  };
   return (
     <div className="w-full p-2 bg-[var(--primary-darker)] h-full">
       <div className="relative">
@@ -134,7 +162,11 @@ export default function PostCard({ post, user }: PostCardProps) {
                 <span className="text-blue-400">💬</span>
                 <span>REPLY [{comments.length}]</span>
               </ArcadeButton>
-              <ArcadeButton variant="log" className="flex items-center gap-2">
+              <ArcadeButton
+                variant="log"
+                className="flex items-center gap-2"
+                onClick={handleShare}
+              >
                 <span className="text-yellow-400">⚡</span>
                 <span>SHARE</span>
               </ArcadeButton>

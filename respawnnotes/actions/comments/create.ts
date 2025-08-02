@@ -18,7 +18,6 @@ export async function createComment(postId: string, formData: FormData) {
     redirect("/login");
   }
 
-  // Handle image upload (only new block)
   let imageUrl = null;
   if (imageFile?.size) {
     const blob = await put(
@@ -32,7 +31,6 @@ export async function createComment(postId: string, formData: FormData) {
     imageUrl = blob.url;
   }
 
-  // Only added image_url to insert and select
   const { data, error } = await supabase
     .from("comments")
     .insert({
@@ -65,7 +63,7 @@ export async function createComment(postId: string, formData: FormData) {
     id: data.id,
     content: data.content,
     created_at: data.created_at,
-    image_url: data.image_url, // Only added this
+    image_url: data.image_url,
     author: {
       name: profile?.username || "Anonymous",
       avatar: profile?.avatar_url || "https://via.placeholder.com/40",

@@ -1,9 +1,8 @@
-// components/feed/getPosts.ts
 import { createClient } from "@/lib/supabase/server";
 import { Post } from "@/types/types";
 
-export async function getPosts(): Promise<{
-  posts: Post[] | null;
+export async function getPostById(postId: string): Promise<{
+  post: Post | null;
   error: any;
   user: any;
 }> {
@@ -13,7 +12,7 @@ export async function getPosts(): Promise<{
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: posts, error } = await supabase
+  const { data: rawPost, error } = await supabase
     .from("posts")
     .select(
       `
@@ -45,8 +44,18 @@ export async function getPosts(): Promise<{
       )
     `
     )
-    .order("created_at", { ascending: false })
-    .returns<Post[]>(); 
+    .eq("id", postId)
+    .single();
 
-  return { posts, error, user };
+  // Transform the data to match Post Type 
+  const post: Post | null = rawPost
+    ? {
+        ...rawPost,
+        profiles: Array.isArray(rawPost.profiles)
+          ? rawPost.profiles[0]
+          : rawPost.profiles,
+      }
+    : null;
+
+  return { post, error, user };
 }

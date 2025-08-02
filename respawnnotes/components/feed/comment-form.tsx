@@ -85,7 +85,7 @@ export default function CommentForm({
                 />
                 <ArcadeButton
                   type="button"
-                  variant="log"
+                  variant="image"
                   className="text-xs px-2"
                   onClick={() => fileInputRef.current?.click()}
                 >
