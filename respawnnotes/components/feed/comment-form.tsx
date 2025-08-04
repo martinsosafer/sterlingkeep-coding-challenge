@@ -62,9 +62,10 @@ export default function CommentForm({
           </div>
         )}
 
-        <div className="flex items-start gap-2 w-full">
+        {/* Form row */}
+        <div className="flex flex-wrap md:flex-nowrap items-start gap-2 w-full">
           {/* Text input with image button */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="border-4 border-black bg-black p-1">
               <div className="border-2 border-green-400 bg-gray-900 p-2 flex items-center">
                 <input
@@ -96,8 +97,13 @@ export default function CommentForm({
           </div>
 
           {/* Submit button */}
-          <div className="mt-1">
-            <ArcadeButton type="submit" variant="post" disabled={isSubmitting}>
+          <div className="w-full md:w-auto my-1">
+            <ArcadeButton
+              type="submit"
+              variant="post"
+              disabled={isSubmitting}
+              className="w-full md:w-auto"
+            >
               {isSubmitting ? "POSTING..." : "POST"}
             </ArcadeButton>
           </div>
